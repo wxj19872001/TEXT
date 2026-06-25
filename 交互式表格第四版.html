@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>概念性城市设计案例解构表 - 交互式认知脚手架</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 100px;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; font-weight: 600; }
+        .header .subtitle { font-size: 1.1em; opacity: 0.9; max-width: 800px; margin: 0 auto; line-height: 1.8; }
+        .header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 用户系统 */
+        .user-bar {
+            background: #fff8e1;
+            padding: 12px 40px;
+            border-bottom: 1px solid #ffe0b2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95em;
+            color: #e65100;
+        }
+        .user-info strong { color: #bf360c; }
+
+        /* 案例选择器 */
+        .case-selector {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+        .case-selector label { font-weight: 600; color: #495057; }
+        .case-selector select {
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.95em;
+            min-width: 250px;
+            cursor: pointer;
+        }
+        .case-selector select:focus { outline: none; border-color: #667eea; }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a6fd6; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+        .btn-secondary { background: white; color: #667eea; border: 2px solid #667eea; }
+        .btn-secondary:hover { background: #f8f9ff; }
+        .btn-danger { background: #fff; color: #dc3545; border: 2px solid #dc3545; }
+        .btn-danger:hover { background: #fff5f5; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-warning:hover { background: #e0a800; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-info:hover { background: #138496; }
+
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+        .progress-bar {
+            width: 200px;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+        .progress-text { font-size: 0.9em; color: #666; font-weight: 500; }
+
+        .table-wrapper { overflow-x: auto; max-height: 70vh; overflow-y: auto; position: relative; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        
+        thead {
+            background: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 25;
+        }
+        th {
+            padding: 14px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #f8f9fa;
+        }
+
+        tbody tr { border-bottom: 1px solid #e9ecef; transition: all 0.3s ease; }
+        tbody tr:hover { background: #f8f9ff; }
+        td {
+            padding: 12px 10px;
+            vertical-align: top;
+            border-right: 1px solid #f0f0f0;
+        }
+        td:last-child { border-right: none; }
+
+        .module-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            position: sticky;
+            top: 53px;
+            z-index: 20;
+        }
+        .module-header:hover {
+            background: linear-gradient(135deg, #5a6fd6 0%, #6a4198 100%);
+        }
+        .module-header td {
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 14px 10px;
+        }
+        .module-title {
+            font-size: 1.05em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .module-icon { font-size: 1.3em; }
+        .toggle-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+        .module-header.collapsed .toggle-icon {
+            transform: translateY(-50%) rotate(-90deg);
+        }
+        .module-description {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+
+        .dimension-cell {
+            font-weight: 600;
+            color: #495057;
+            background: #fafbfc;
+            width: 9%;
+            font-size: 0.9em;
+        }
+        .question-cell { color: #667eea; font-weight: 500; width: 11%; font-size: 0.88em; }
+        .task-cell {
+            background: #f8f9ff;
+            font-weight: 500;
+            color: #495057;
+            width: 13%;
+            font-size: 0.88em;
+        }
+        .content-cell { width: 24%; font-size: 0.88em; line-height: 1.6; color: #555; }
+        .output-cell { width: 15%; font-size: 0.88em; }
+        .image-cell { width: 16%; font-size: 0.85em; }
+
+        .output-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.85em;
+            resize: vertical;
+            min-height: 50px;
+            transition: border-color 0.3s;
+        }
+        .output-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .output-hint {
+            font-size: 0.75em;
+            color: #999;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .note-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.88em;
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color 0.3s;
+            margin-top: 8px;
+        }
+        .note-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .check-btn {
+            background: none;
+            border: 2px solid #dee2e6;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 6px;
+            transition: all 0.3s;
+            font-size: 0.75em;
+            vertical-align: middle;
+        }
+        .check-btn:hover { border-color: #667eea; color: #667eea; }
+        .check-btn.completed { background: #667eea; border-color: #667eea; color: white; }
+        .row-completed { background: #f0f9f0 !important; }
+        .row-completed .dimension-cell { background: #e8f5e9; }
+
+        /* 图片相关 */
+        .dim-image-area {
+            min-height: 60px;
+        }
+        .dim-img-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            margin: 2px;
+        }
+        .dim-img-thumb:hover { border-color: #667eea; transform: scale(1.05); }
+        .dim-img-add {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.5em;
+            margin: 2px;
+            transition: all 0.3s;
+            vertical-align: top;
+        }
+        .dim-img-add:hover { border-color: #667eea; color: #667eea; background: #f8f9ff; }
+        .dim-img-input { display: none; }
+
+        /* 底部固定操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 2px solid #667eea;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+        .bottom-bar .btn { padding: 12px 22px; font-size: 0.95em; }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            margin: 20px auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .modal-close:hover { background: #f5f5f5; color: #333; }
+        .modal h2 { color: #667eea; margin-bottom: 20px; }
+
+        .knowledge-toolbar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .knowledge-card {
+            background: #f8f9ff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .knowledge-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+        .knowledge-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            padding-right: 60px;
+        }
+        .knowledge-card .card-meta {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 12px;
+        }
+        .knowledge-card .card-field {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .knowledge-card .card-field strong {
+            color: #495057;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.85em;
+        }
+        .knowledge-card .card-field p {
+            color: #666;
+            line-height: 1.5;
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+        .card-delete {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2em;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .card-delete:hover { background: #fff5f5; }
+        .card-compare-check {
+            position: absolute;
+            top: 15px;
+            right: 45px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85em;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        .compare-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+        .compare-table td {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+            background: white;
+        }
+        .compare-table tr:nth-child(even) td {
+            background: #f8f9ff;
+        }
+
+        .export-options {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .export-options label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #495057;
+        }
+        .export-options select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        .backup-section {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .backup-section h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        .backup-section p {
+            color: #555;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
+            grid-column: 1 / -1;
+        }
+
+        .img-preview-modal img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5em; }
+            .case-selector { flex-direction: column; align-items: stretch; }
+            .progress-section { margin-left: 0; width: 100%; }
+            .progress-bar { width: 100%; }
+            .bottom-bar { padding: 10px; gap: 8px; }
+            .bottom-bar .btn { padding: 10px 16px; font-size: 0.85em; }
+            .modal-content { padding: 20px; margin: 10px; }
+            .knowledge-grid { grid-template-columns: 1fr; }
+            .user-bar { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>概念性城市设计案例解构表</h1>
+            <div class="subtitle">五模块结构及操作指引详表 —— 从"语境扫描"到"批判重构"的递进式认知脚手架</div>
+            <div class="badge">交互式学习工具</div>
+        </div>
+
+        <div class="user-bar" id="userBar">
+            <div class="user-info" id="userInfo">
+                <span>👤 当前用户：</span>
+                <strong id="currentUserName">未登录</strong>
+                <span id="userHint" style="color:#999;font-size:0.85em;">（数据仅保存在当前浏览器，建议定期备份）</span>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-info" onclick="showUserModal()"><span>👤</span> 切换用户</button>
+                <button class="btn btn-secondary" onclick="showBackupModal()"><span>💾</span> 备份/恢复</button>
+            </div>
+        </div>
+
+        <div class="case-selector">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <label>📁 当前案例：</label>
+                <select id="caseSelect" onchange="switchCase()">
+                    <option value="">-- 请选择或新建案例 --</option>
+                </select>
+                <button class="btn btn-primary" onclick="createNewCase()"><span>➕</span> 新建案例</button>
+                <button class="btn btn-danger" onclick="deleteCurrentCase()"><span>🗑️</span> 删除</button>
+            </div>
+            <div class="progress-section">
+                <span class="progress-text">完成进度：</span>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <span class="progress-text" id="progressText">0/20</span>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="deconstructionTable">
+                <thead>
+                    <tr>
+                        <th style="width: 9%">模块</th>
+                        <th style="width: 11%">分析维度</th>
+                        <th style="width: 11%">核心问题/要点</th>
+                        <th style="width: 13%">核心任务</th>
+                        <th style="width: 24%">分析内容与操作指引</th>
+                        <th style="width: 15%">产出成果<br><span style="font-weight:normal;font-size:0.8em;">（请填写）</span></th>
+                        <th style="width: 17%">相关图片<br><span style="font-weight:normal;font-size:0.8em;">（点击+上传）</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 模块一 -->
+                    <tr class="module-header" data-module="1">
+                        <td colspan="7">
+                            <div class="module-title">
+                                <span class="module-icon">🔍</span>
+                                <div>
+                                    <div>模块一：项目概览与语境深度扫描</div>
+                                    <div class="module-description">建立精准的"时空坐标"与"问题场域"</div>
+                                </div>
+                            </div>
+                            <span class="toggle-icon">▼</span>
+                        </td>
+                    </tr>
+                    <tr data-module="1">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>1. 基本信息定位</td>
+                        <td class="question-cell">建立精准的"时空坐标"</td>
+                        <td class="question-cell">建立精准的"时空坐标"</td>
+                        <td class="task-cell">建立精准的"时空坐标"与"问题场域"</td>
+                        <td class="content-cell">
+                            <strong>记录：</strong>项目名称、区位、用地尺度、设计团队、完成时间、项目类型（竞赛/实施/概念）
+                            <textarea class="note-input" data-note="m1-1" placeholder="在此记录你的分析笔记..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o1-1" placeholder="例如：项目背景报告、区位分析图..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m1-1">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m1-1')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m1-1" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm1-1')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="1">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>2. 初始条件与核心约束</td>
+                        <td class="question-cell">识别"问题场域"</td>
+                        <td class="question-cell">识别"问题场域"</td>
+                        <td class="task-cell">建立精准的"时空坐标"与"问题场域"</td>
+                        <td class="content-cell">
+                            <strong>分析：</strong>场地面临的最核心挑战（如产权碎片化、生态退化、交通阻隔）、关键矛盾或独特机遇
+                            <textarea class="note-input" data-note="m1-2" placeholder="识别1-2个结构性约束..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o1-2" placeholder="例如：问题清单、SWOT分析表..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m1-2">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m1-2')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m1-2" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm1-2')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="1">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>3. 核心利益相关者</td>
+                        <td class="question-cell">解析"多元诉求"</td>
+                        <td class="question-cell">解析"多元诉求"</td>
+                        <td class="task-cell">建立精准的"时空坐标"与"问题场域"</td>
+                        <td class="content-cell">
+                            <strong>识别：</strong>政府、开发商、原住民、商户、公众等主要主体及其核心利益诉求与博弈关系
+                            <textarea class="note-input" data-note="m1-3" placeholder="分析多元诉求与博弈关系..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o1-3" placeholder="例如：利益相关者矩阵..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m1-3">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m1-3')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m1-3" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm1-3')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="1">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>4. 政策与市场语境</td>
+                        <td class="question-cell">界定"可能性边界"</td>
+                        <td class="question-cell">界定"可能性边界"</td>
+                        <td class="task-cell">建立精准的"时空坐标"与"问题场域"</td>
+                        <td class="content-cell">
+                            <strong>分析：</strong>宏观政策背景（如城市更新条例、生态红线政策）、区域市场环境（土地价值、产业趋势）如何影响项目目标
+                            <textarea class="note-input" data-note="m1-4" placeholder="分析政策与市场边界..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o1-4" placeholder="例如：政策影响评估..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m1-4">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m1-4')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m1-4" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm1-4')">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- 模块二 -->
+                    <tr class="module-header" data-module="2">
+                        <td colspan="7">
+                            <div class="module-title">
+                                <span class="module-icon">💡</span>
+                                <div>
+                                    <div>模块二：核心概念的解码与溯源</div>
+                                    <div class="module-description">捕捉案例的"灵魂"，分析概念如何从语境中生长出来</div>
+                                </div>
+                            </div>
+                            <span class="toggle-icon">▼</span>
+                        </td>
+                    </tr>
+                    <tr data-module="2">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>1. 核心概念提炼</td>
+                        <td class="question-cell">捕捉案例"灵魂"</td>
+                        <td class="question-cell">捕捉案例"灵魂"</td>
+                        <td class="task-cell">捕捉案例的"灵魂"，分析概念如何从语境中生长出来</td>
+                        <td class="content-cell">
+                            <strong>精准提炼：</strong>设计者提出的核心概念词汇（如"城市阳台""生态织补"），避免简单复述宣传语
+                            <textarea class="note-input" data-note="m2-1" placeholder="提炼核心概念词汇..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o2-1" placeholder="例如：概念定义卡片..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m2-1">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m2-1')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m2-1" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm2-1')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="2">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>2. 概念内涵阐释</td>
+                        <td class="question-cell">解码而非复述</td>
+                        <td class="question-cell">解码而非复述</td>
+                        <td class="task-cell">捕捉案例的"灵魂"，分析概念如何从语境中生长出来</td>
+                        <td class="content-cell">
+                            <strong>阐释：</strong>该概念在本案例中的具体内涵与操作化定义，它试图回应什么问题？
+                            <textarea class="note-input" data-note="m2-2" placeholder="阐释概念的具体内涵..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o2-2" placeholder="例如：概念操作化定义..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m2-2">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m2-2')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m2-2" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm2-2')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="2">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>3. 概念生成溯源</td>
+                        <td class="question-cell">追溯"生长逻辑"</td>
+                        <td class="question-cell">追溯"生长逻辑"</td>
+                        <td class="task-cell">捕捉案例的"灵魂"，分析概念如何从语境中生长出来</td>
+                        <td class="content-cell">
+                            <strong>分析：</strong>该概念如何从模块一的语境（初始条件、利益诉求、政策背景）中"生长"出来？
+                            <textarea class="note-input" data-note="m2-3" placeholder="追溯概念生长逻辑..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o2-3" placeholder="例如：因果链分析图..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m2-3">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m2-3')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m2-3" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm2-3')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="2">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>4. 概念统领性检验</td>
+                        <td class="question-cell">检验"一以贯之"</td>
+                        <td class="question-cell">检验"一以贯之"</td>
+                        <td class="task-cell">捕捉案例的"灵魂"，分析概念如何从语境中生长出来</td>
+                        <td class="content-cell">
+                            <strong>评估：</strong>核心概念是否真正贯穿从目标设定、策略选择到空间形态、细节设计的各个层面？
+                            <textarea class="note-input" data-note="m2-4" placeholder="检验概念统领性..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o2-4" placeholder="例如：统领性检验表..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m2-4">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m2-4')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m2-4" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm2-4')">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- 模块三 -->
+                    <tr class="module-header" data-module="3">
+                        <td colspan="7">
+                            <div class="module-title">
+                                <span class="module-icon">🎯</span>
+                                <div>
+                                    <div>模块三：目标体系的结构化建构</div>
+                                    <div class="module-description">梳理案例希望达成的"愿景谱系"，检验内在逻辑</div>
+                                </div>
+                            </div>
+                            <span class="toggle-icon">▼</span>
+                        </td>
+                    </tr>
+                    <tr data-module="3">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>1. 目标层级解构</td>
+                        <td class="question-cell">梳理"愿景谱系"</td>
+                        <td class="question-cell">梳理"愿景谱系"</td>
+                        <td class="task-cell">梳理案例希望达成的"愿景谱系"，检验内在逻辑</td>
+                        <td class="content-cell">
+                            <strong>建立金字塔：</strong>总体目标（1个）→ 分项目标（3-5个，如功能优化、生态提升、社会融合）→ 具体指标（可量化、可检验）
+                            <textarea class="note-input" data-note="m3-1" placeholder="解构目标层级..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o3-1" placeholder="例如：目标层级金字塔..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m3-1">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m3-1')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m3-1" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm3-1')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="3">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>2. 逻辑关联分析</td>
+                        <td class="question-cell">检验"内在一致性"</td>
+                        <td class="question-cell">检验"内在一致性"</td>
+                        <td class="task-cell">梳理案例希望达成的"愿景谱系"，检验内在逻辑</td>
+                        <td class="content-cell">
+                            <strong>判断：</strong>各层级目标之间是否存在清晰的支撑、因果或协同关系？是否存在目标冲突？
+                            <textarea class="note-input" data-note="m3-2" placeholder="分析目标间逻辑关系..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o3-2" placeholder="例如：目标关联矩阵..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m3-2">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m3-2')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m3-2" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm3-2')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="3">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>3. 目标的情境响应</td>
+                        <td class="question-cell">检验"问题回应度"</td>
+                        <td class="question-cell">检验"问题回应度"</td>
+                        <td class="task-cell">梳理案例希望达成的"愿景谱系"，检验内在逻辑</td>
+                        <td class="content-cell">
+                            <strong>回溯：</strong>将目标体系与模块一识别的核心约束进行对照，检验目标是否直接、有力地回应了初始问题
+                            <textarea class="note-input" data-note="m3-3" placeholder="检验目标回应度..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o3-3" placeholder="例如：问题-目标回应表..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m3-3">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m3-3')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m3-3" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm3-3')">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- 模块四 -->
+                    <tr class="module-header" data-module="4">
+                        <td colspan="7">
+                            <div class="module-title">
+                                <span class="module-icon">🔗</span>
+                                <div>
+                                    <div>模块四：策略体系与空间转译的"映射链"</div>
+                                    <div class="module-description">揭示从抽象目标到具体空间的"魔法转换"过程</div>
+                                </div>
+                            </div>
+                            <span class="toggle-icon">▼</span>
+                        </td>
+                    </tr>
+                    <tr data-module="4">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>1. 关键策略归纳</td>
+                        <td class="question-cell">识别"核心手段"</td>
+                        <td class="question-cell">识别"核心手段"</td>
+                        <td class="task-cell">揭示从抽象目标到具体空间的"魔法转换"过程</td>
+                        <td class="content-cell">
+                            <strong>归纳：</strong>方案采用的3-5条关键空间策略（如功能混合、立体开发、遗产活化、蓝绿织网）
+                            <textarea class="note-input" data-note="m4-1" placeholder="归纳关键策略..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o4-1" placeholder="例如：策略清单..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m4-1">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m4-1')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m4-1" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm4-1')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="4">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>2. 映射链建立</td>
+                        <td class="question-cell">揭示"魔法转换"</td>
+                        <td class="question-cell">揭示"魔法转换"</td>
+                        <td class="task-cell">揭示从抽象目标到具体空间的"魔法转换"过程</td>
+                        <td class="content-cell">
+                            <strong>建立清晰映射：</strong>目标A → 策略B → 空间手法C（如"促进交往"→"功能混合"→"底层架空+连廊系统"）
+                            <textarea class="note-input" data-note="m4-2" placeholder="建立目标-策略-空间映射链..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o4-2" placeholder="例如：映射链图示..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m4-2">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m4-2')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m4-2" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm4-2')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="4">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>3. 策略协同与冲突</td>
+                        <td class="question-cell">审视"系统整合"</td>
+                        <td class="question-cell">审视"系统整合"</td>
+                        <td class="task-cell">揭示从抽象目标到具体空间的"魔法转换"过程</td>
+                        <td class="content-cell">
+                            <strong>分析：</strong>各策略之间是相互强化还是彼此削弱？是否存在为了某一目标而牺牲另一目标的权衡？
+                            <textarea class="note-input" data-note="m4-3" placeholder="分析策略协同与冲突..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o4-3" placeholder="例如：策略协同评估..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m4-3">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m4-3')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m4-3" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm4-3')">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- 模块五 -->
+                    <tr class="module-header" data-module="5">
+                        <td colspan="7">
+                            <div class="module-title">
+                                <span class="module-icon">🧠</span>
+                                <div>
+                                    <div>模块五：批判性评析、迁移与反事实思考</div>
+                                    <div class="module-description">培养独立思辨与知识迁移能力</div>
+                                </div>
+                            </div>
+                            <span class="toggle-icon">▼</span>
+                        </td>
+                    </tr>
+                    <tr data-module="5">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>1. 综合评价与批判</td>
+                        <td class="question-cell">独立思辨</td>
+                        <td class="question-cell">独立思辨</td>
+                        <td class="task-cell">培养独立思辨与知识迁移能力</td>
+                        <td class="content-cell">
+                            <strong>评价：</strong>方案的最大贡献与核心缺陷是什么？其成功是设计卓越还是时机/资本/政策红利？
+                            <textarea class="note-input" data-note="m5-1" placeholder="进行独立批判性评价..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o5-1" placeholder="例如：批判性评价报告..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m5-1">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m5-1')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m5-1" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm5-1')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="5">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>2. 可行性反思</td>
+                        <td class="question-cell">审视"落地逻辑"</td>
+                        <td class="question-cell">审视"落地逻辑"</td>
+                        <td class="task-cell">培养独立思辨与知识迁移能力</td>
+                        <td class="content-cell">
+                            <strong>反思：</strong>方案在实施中遇到的关键障碍是什么？哪些设计在现有制度/经济/技术条件下难以实现？
+                            <textarea class="note-input" data-note="m5-2" placeholder="反思落地可行性..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o5-2" placeholder="例如：可行性评估..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m5-2">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m5-2')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m5-2" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm5-2')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="5">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>3. 迁移潜能与边界</td>
+                        <td class="question-cell">知识转化</td>
+                        <td class="question-cell">知识转化</td>
+                        <td class="task-cell">培养独立思辨与知识迁移能力</td>
+                        <td class="content-cell">
+                            <strong>分析：</strong>该案例的策略逻辑可迁移至何种情境？其适用边界（尺度、地域、制度、文化）在哪里？
+                            <textarea class="note-input" data-note="m5-3" placeholder="分析迁移潜能与边界..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o5-3" placeholder="例如：迁移性评估..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m5-3">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m5-3')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m5-3" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm5-3')">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-module="5">
+                        <td class="dimension-cell"><button class="check-btn" onclick="toggleComplete(this)"></button>4. 反事实设计</td>
+                        <td class="question-cell">创造性重构</td>
+                        <td class="question-cell">创造性重构</td>
+                        <td class="task-cell">培养独立思辨与知识迁移能力</td>
+                        <td class="content-cell">
+                            <strong>假设：</strong>"如果……会怎样？"（如：如果取消地标建筑、如果采用完全公众参与、如果置于另一城市）引导学生逻辑推演
+                            <textarea class="note-input" data-note="m5-4" placeholder="进行反事实推理..."></textarea>
+                        </td>
+                        <td class="output-cell">
+                            <textarea class="output-input" data-output="o5-4" placeholder="例如：反事实推演方案..."></textarea>
+                            <span class="output-hint">💡 填写你的实际产出</span>
+                        </td>
+                        <td class="image-cell">
+                            <div class="dim-image-area" data-dim="m5-4">
+                                <label class="dim-img-add" onclick="triggerDimImageUpload('m5-4')">+</label>
+                                <input type="file" class="dim-img-input" id="img-input-m5-4" accept="image/*" multiple onchange="handleDimImageUpload(event, 'm5-4')">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 底部固定操作栏 -->
+    <div class="bottom-bar">
+        <button class="btn btn-primary" onclick="showStrategyCardModal()"><span>📝</span> 生成策略卡片</button>
+        <button class="btn btn-primary" onclick="showKnowledgeBase()"><span>📚</span> 知识库</button>
+        <button class="btn btn-secondary" onclick="showExportModal()"><span>💾</span> 导出笔记</button>
+        <button class="btn btn-success" onclick="saveCurrentCase()"><span>💾</span> 保存当前案例</button>
+    </div>
+
+    <!-- 用户登录模态框 -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('userModal')">&times;</span>
+            <h2>👤 用户身份设置</h2>
+            <p style="color:#666;margin-bottom:20px;line-height:1.7;">
+                为确保数据归属，请设置你的身份标识。不同用户的数据完全隔离，互不干扰。<br>
+                <strong>提示：</strong>建议使用"姓名+学号"作为用户名，方便识别。
+            </p>
+            <div class="form-group">
+                <label>用户名 *</label>
+                <input type="text" id="usernameInput" placeholder="例如：张三2024">
+            </div>
+            <div class="form-group">
+                <label>访问密码（可选，用于保护数据）</label>
+                <input type="password" id="userPassword" placeholder="设置密码防止他人查看你的数据">
+            </div>
+            <button class="btn btn-primary" onclick="saveUser()" style="width:100%;justify-content:center;">确认身份</button>
+        </div>
+    </div>
+
+    <!-- 备份/恢复模态框 -->
+    <div class="modal" id="backupModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('backupModal')">&times;</span>
+            <h2>💾 数据备份与恢复</h2>
+            <p style="color:#666;margin-bottom:20px;line-height:1.7;">
+                由于数据保存在浏览器本地，更换电脑或清理缓存会导致数据丢失。请定期备份，并在需要时恢复。
+            </p>
+            
+            <div class="backup-section">
+                <h4>📤 导出我的数据库（备份）</h4>
+                <p>将当前用户的所有案例、笔记、图片、策略卡片导出为一个文件，保存到安全位置。</p>
+                <button class="btn btn-success" onclick="exportUserDatabase()" style="width:100%;justify-content:center;">
+                    <span>📥</span> 下载我的数据库文件
+                </button>
+            </div>
+            
+            <div class="backup-section" style="background:#fff3e0;margin-top:20px;">
+                <h4>📥 导入数据库（恢复）</h4>
+                <p>从之前备份的文件恢复数据，或导入同学分享的数据库。</p>
+                <input type="file" id="importFile" accept=".json" onchange="importUserDatabase(event)" style="display:none;">
+                <button class="btn btn-warning" onclick="document.getElementById('importFile').click()" style="width:100%;justify-content:center;">
+                    <span>📤</span> 选择备份文件恢复
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建案例模态框 -->
+    <div class="modal" id="newCaseModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('newCaseModal')">&times;</span>
+            <h2>➕ 新建案例</h2>
+            <div class="form-group">
+                <label>案例名称 *</label>
+                <input type="text" id="newCaseName" placeholder="例如：上海杨浦滨江更新">
+            </div>
+            <div class="form-group">
+                <label>案例简介（可选）</label>
+                <textarea id="newCaseDesc" placeholder="简要描述该案例..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="confirmNewCase()" style="width:100%;justify-content:center;">创建案例</button>
+        </div>
+    </div>
+
+    <!-- 导出模态框 -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('exportModal')">&times;</span>
+            <h2>💾 导出笔记</h2>
+            <div class="export-options">
+                <label>选择要导出的案例：</label>
+                <select id="exportCaseSelect"></select>
+                <label>导出格式：</label>
+                <select id="exportFormat">
+                    <option value="txt">纯文本 (.txt)</option>
+                    <option value="md">Markdown (.md)</option>
+                    <option value="html">网页 (.html，含图片)</option>
+                </select>
+                <button class="btn btn-primary" onclick="confirmExport()" style="width:100%;justify-content:center;">确认导出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 策略卡片模态框 -->
+    <div class="modal" id="strategyCardModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('strategyCardModal')">&times;</span>
+            <h2>📝 生成案例策略卡片</h2>
+            <p style="color:#666;margin-bottom:20px;">将核心发现提炼为"核心问题—概念逻辑—关键映射"三要素，存入个人知识库</p>
+            <div class="form-group">
+                <label>案例名称 *</label>
+                <input type="text" id="cardCaseName" placeholder="案例名称">
+            </div>
+            <div class="form-group">
+                <label>核心问题 *</label>
+                <textarea id="cardProblem" placeholder="案例面对的最核心挑战是什么？"></textarea>
+            </div>
+            <div class="form-group">
+                <label>概念逻辑 *</label>
+                <textarea id="cardConcept" placeholder="设计者提出的核心概念及其生长逻辑"></textarea>
+            </div>
+            <div class="form-group">
+                <label>关键映射 *</label>
+                <textarea id="cardMapping" placeholder="最核心的目标→策略→空间映射链"></textarea>
+            </div>
+            <div class="form-group">
+                <label>适用边界（可选）</label>
+                <input type="text" id="cardBoundary" placeholder="该策略的适用条件与限制">
+            </div>
+            <div class="form-group">
+                <label>个人反思（可选）</label>
+                <textarea id="cardReflection" placeholder="对该案例的批判性思考..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="saveStrategyCard()" style="width:100%;justify-content:center;">存入知识库</button>
+        </div>
+    </div>
+
+    <!-- 知识库模态框 -->
+    <div class="modal" id="knowledgeBaseModal">
+        <div class="modal-content" style="max-width:900px;">
+            <span class="modal-close" onclick="closeModal('knowledgeBaseModal')">&times;</span>
+            <h2>📚 个人知识库</h2>
+            <div class="knowledge-toolbar">
+                <input type="text" class="search-input" id="knowledgeSearch" placeholder="🔍 搜索案例名称、核心问题、概念逻辑..." oninput="renderKnowledgeBase()">
+                <button class="btn btn-primary" onclick="startCompare()" id="compareBtn" disabled><span>📊</span> 对比选中</button>
+            </div>
+            <div id="knowledgeGrid" class="knowledge-grid"></div>
+        </div>
+    </div>
+
+    <!-- 对比模态框 -->
+    <div class="modal" id="compareModal">
+        <div class="modal-content" style="max-width:95%;width:1200px;">
+            <span class="modal-close" onclick="closeModal('compareModal')">&times;</span>
+            <h2>📊 策略卡片对比（最多4个）</h2>
+            <div id="compareContainer" style="overflow-x:auto;"></div>
+        </div>
+    </div>
+
+    <!-- 图片预览模态框 -->
+    <div class="modal" id="imagePreviewModal" onclick="closeModal('imagePreviewModal')">
+        <div class="modal-content img-preview-modal" style="max-width:90%;padding:10px;background:transparent;box-shadow:none;" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('imagePreviewModal')" style="color:white;text-shadow:0 2px 4px rgba(0,0,0,0.5);">&times;</span>
+            <img id="previewImage" src="">
+        </div>
+    </div>
+
+    <script>
+        // 全局状态
+        let currentUser = null;
+        let cases = [];
+        let currentCaseId = null;
+        let strategyCards = [];
+        let selectedForCompare = new Set();
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUser();
+            
+            document.querySelectorAll('.module-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const moduleId = this.getAttribute('data-module');
+                    const rows = document.querySelectorAll(`tr[data-module="${moduleId}"]:not(.module-header)`);
+                    const isCollapsed = this.classList.contains('collapsed');
+                    rows.forEach(row => row.style.display = isCollapsed ? '' : 'none');
+                    this.classList.toggle('collapsed');
+                });
+            });
+        });
+
+        // 用户系统
+        function checkUser() {
+            const saved = localStorage.getItem('deconstruct_current_user');
+            if (saved) {
+                try {
+                    currentUser = JSON.parse(saved);
+                    document.getElementById('currentUserName').textContent = currentUser.name;
+                    loadUserData();
+                    updateCaseSelect();
+                    if (cases.length > 0) {
+                        document.getElementById('caseSelect').value = cases[0].id;
+                        switchCase();
+                    }
+                } catch(e) {
+                    showUserModal();
+                }
+            } else {
+                showUserModal();
+            }
+        }
+
+        function showUserModal() {
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function saveUser() {
+            const name = document.getElementById('usernameInput').value.trim();
+            if (!name) { alert('请输入用户名'); return; }
+            
+            currentUser = {
+                name: name,
+                password: document.getElementById('userPassword').value,
+                createdAt: new Date().toLocaleString()
+            };
+            
+            localStorage.setItem('deconstruct_current_user', JSON.stringify(currentUser));
+            document.getElementById('currentUserName').textContent = name;
+            closeModal('userModal');
+            
+            // 尝试加载该用户的数据
+            loadUserData();
+            updateCaseSelect();
+        }
+
+        function getUserKey() {
+            return 'deconstruct_data_' + (currentUser ? currentUser.name : 'default');
+        }
+
+        function loadUserData() {
+            const key = getUserKey();
+            const data = localStorage.getItem(key);
+            if (data) {
+                const parsed = JSON.parse(data);
+                cases = parsed.cases || [];
+                strategyCards = parsed.strategyCards || [];
+            } else {
+                cases = [];
+                strategyCards = [];
+            }
+        }
+
+        function saveUserData() {
+            if (!currentUser) return;
+            const key = getUserKey();
+            const data = JSON.stringify({
+                cases: cases,
+                strategyCards: strategyCards,
+                savedAt: new Date().toLocaleString()
+            });
+            localStorage.setItem(key, data);
+        }
+
+        // 案例管理
+        function createNewCase() {
+            if (!currentUser) { alert('请先设置用户身份'); showUserModal(); return; }
+            document.getElementById('newCaseName').value = '';
+            document.getElementById('newCaseDesc').value = '';
+            document.getElementById('newCaseModal').classList.add('active');
+        }
+
+        function confirmNewCase() {
+            const name = document.getElementById('newCaseName').value.trim();
+            if (!name) { alert('请输入案例名称'); return; }
+            
+            const newCase = {
+                id: 'case_' + Date.now(),
+                name: name,
+                desc: document.getElementById('newCaseDesc').value,
+                createdAt: new Date().toLocaleString(),
+                notes: {},
+                outputs: {},
+                completed: [],
+                dimImages: {}
+            };
+            
+            cases.push(newCase);
+            saveUserData();
+            updateCaseSelect();
+            document.getElementById('caseSelect').value = newCase.id;
+            switchCase();
+            closeModal('newCaseModal');
+        }
+
+        function updateCaseSelect() {
+            const select = document.getElementById('caseSelect');
+            const exportSelect = document.getElementById('exportCaseSelect');
+            select.innerHTML = '<option value="">-- 请选择或新建案例 --</option>';
+            exportSelect.innerHTML = '<option value="">-- 选择案例 --</option>';
+            cases.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                exportSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+        }
+
+        function switchCase() {
+            const caseId = document.getElementById('caseSelect').value;
+            if (!caseId) { currentCaseId = null; clearAllInputs(); return; }
+            if (currentCaseId) saveCurrentCaseData();
+            currentCaseId = caseId;
+            const caseData = cases.find(c => c.id === caseId);
+            if (caseData) loadCaseData(caseData);
+        }
+
+        function loadCaseData(caseData) {
+            // 加载笔记
+            document.querySelectorAll('.note-input').forEach(input => {
+                input.value = caseData.notes[input.getAttribute('data-note')] || '';
+            });
+            // 加载产出
+            document.querySelectorAll('.output-input').forEach(input => {
+                input.value = caseData.outputs[input.getAttribute('data-output')] || '';
+            });
+            // 加载完成状态
+            document.querySelectorAll('.check-btn').forEach((btn, index) => {
+                btn.classList.remove('completed');
+                btn.innerHTML = '';
+                btn.closest('tr').classList.remove('row-completed');
+                if (caseData.completed && caseData.completed.includes(index)) {
+                    btn.classList.add('completed');
+                    btn.innerHTML = '✓';
+                    btn.closest('tr').classList.add('row-completed');
+                }
+            });
+            // 加载各维度图片
+            renderAllDimImages(caseData);
+            updateProgress();
+        }
+
+        function saveCurrentCaseData() {
+            if (!currentCaseId) return;
+            const caseData = cases.find(c => c.id === currentCaseId);
+            if (!caseData) return;
+            
+            const notes = {};
+            document.querySelectorAll('.note-input').forEach(input => {
+                notes[input.getAttribute('data-note')] = input.value;
+            });
+            caseData.notes = notes;
+            
+            const outputs = {};
+            document.querySelectorAll('.output-input').forEach(input => {
+                outputs[input.getAttribute('data-output')] = input.value;
+            });
+            caseData.outputs = outputs;
+            
+            const completed = [];
+            document.querySelectorAll('.check-btn').forEach((btn, index) => {
+                if (btn.classList.contains('completed')) completed.push(index);
+            });
+            caseData.completed = completed;
+            
+            saveUserData();
+        }
+
+        function saveCurrentCase() {
+            if (!currentCaseId) { alert('请先选择或创建一个案例'); return; }
+            saveCurrentCaseData();
+            alert('案例已保存！');
+        }
+
+        function deleteCurrentCase() {
+            if (!currentCaseId) { alert('请先选择要删除的案例'); return; }
+            if (!confirm('确定要删除当前案例吗？此操作不可恢复。')) return;
+            cases = cases.filter(c => c.id !== currentCaseId);
+            saveUserData();
+            currentCaseId = null;
+            updateCaseSelect();
+            clearAllInputs();
+        }
+
+        function clearAllInputs() {
+            document.querySelectorAll('.note-input, .output-input').forEach(input => input.value = '');
+            document.querySelectorAll('.check-btn').forEach(btn => {
+                btn.classList.remove('completed');
+                btn.innerHTML = '';
+                btn.closest('tr').classList.remove('row-completed');
+            });
+            document.querySelectorAll('.dim-image-area').forEach(area => {
+                const dim = area.getAttribute('data-dim');
+                area.innerHTML = `
+                    <label class="dim-img-add" onclick="triggerDimImageUpload('${dim}')">+</label>
+                    <input type="file" class="dim-img-input" id="img-input-${dim}" accept="image/*" multiple onchange="handleDimImageUpload(event, '${dim}')">
+                `;
+            });
+            updateProgress();
+        }
+
+        function toggleComplete(btn) {
+            btn.classList.toggle('completed');
+            btn.innerHTML = btn.classList.contains('completed') ? '✓' : '';
+            const row = btn.closest('tr');
+            row.classList.toggle('row-completed', btn.classList.contains('completed'));
+            updateProgress();
+            if (currentCaseId) saveCurrentCaseData();
+        }
+
+        function updateProgress() {
+            const total = document.querySelectorAll('.check-btn').length;
+            const completed = document.querySelectorAll('.check-btn.completed').length;
+            document.getElementById('progressFill').style.width = (completed/total*100) + '%';
+            document.getElementById('progressText').textContent = `${completed}/${total}`;
+        }
+
+        // 维度图片管理
+        function triggerDimImageUpload(dimKey) {
+            if (!currentCaseId) { alert('请先选择案例'); return; }
+            document.getElementById('img-input-' + dimKey).click();
+        }
+
+        function handleDimImageUpload(event, dimKey) {
+            const files = event.target.files;
+            if (!files.length) return;
+            const caseData = cases.find(c => c.id === currentCaseId);
+            if (!caseData) return;
+            if (!caseData.dimImages) caseData.dimImages = {};
+            if (!caseData.dimImages[dimKey]) caseData.dimImages[dimKey] = [];
+            
+            let loaded = 0;
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    caseData.dimImages[dimKey].push({
+                        id: 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        src: e.target.result,
+                        name: file.name,
+                        uploadedAt: new Date().toLocaleString()
+                    });
+                    loaded++;
+                    if (loaded === files.length) {
+                        saveUserData();
+                        renderDimImages(dimKey, caseData.dimImages[dimKey]);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = '';
+        }
+
+        function renderAllDimImages(caseData) {
+            if (!caseData.dimImages) {
+                document.querySelectorAll('.dim-image-area').forEach(area => {
+                    const dim = area.getAttribute('data-dim');
+                    area.innerHTML = `
+                        <label class="dim-img-add" onclick="triggerDimImageUpload('${dim}')">+</label>
+                        <input type="file" class="dim-img-input" id="img-input-${dim}" accept="image/*" multiple onchange="handleDimImageUpload(event, '${dim}')">
+                    `;
+                });
+                return;
+            }
+            
+            document.querySelectorAll('.dim-image-area').forEach(area => {
+                const dim = area.getAttribute('data-dim');
+                const imgs = caseData.dimImages[dim] || [];
+                renderDimImages(dim, imgs);
+            });
+        }
+
+        function renderDimImages(dimKey, images) {
+            const area = document.querySelector(`.dim-image-area[data-dim="${dimKey}"]`);
+            if (!area) return;
+            
+            let html = '';
+            images.forEach((img, index) => {
+                html += `<img src="${img.src}" class="dim-img-thumb" onclick="previewImage('${img.src}')" title="${img.name}">`;
+            });
+            html += `<label class="dim-img-add" onclick="triggerDimImageUpload('${dimKey}')">+</label>`;
+            html += `<input type="file" class="dim-img-input" id="img-input-${dimKey}" accept="image/*" multiple onchange="handleDimImageUpload(event, '${dimKey}')">`;
+            area.innerHTML = html;
+        }
+
+        function previewImage(src) {
+            document.getElementById('previewImage').src = src;
+            document.getElementById('imagePreviewModal').classList.add('active');
+        }
+
+        // 导出
+        function showExportModal() {
+            updateCaseSelect();
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        function confirmExport() {
+            const caseId = document.getElementById('exportCaseSelect').value;
+            const format = document.getElementById('exportFormat').value;
+            if (!caseId) { alert('请选择要导出的案例'); return; }
+            
+            const caseData = cases.find(c => c.id === caseId);
+            if (!caseData) return;
+            
+            const timestamp = new Date().toLocaleString();
+            const noteMap = {
+                'm1-1': '模块一：1. 基本信息定位', 'm1-2': '模块一：2. 初始条件与核心约束',
+                'm1-3': '模块一：3. 核心利益相关者', 'm1-4': '模块一：4. 政策与市场语境',
+                'm2-1': '模块二：1. 核心概念提炼', 'm2-2': '模块二：2. 概念内涵阐释',
+                'm2-3': '模块二：3. 概念生成溯源', 'm2-4': '模块二：4. 概念统领性检验',
+                'm3-1': '模块三：1. 目标层级解构', 'm3-2': '模块三：2. 逻辑关联分析',
+                'm3-3': '模块三：3. 目标的情境响应', 'm4-1': '模块四：1. 关键策略归纳',
+                'm4-2': '模块四：2. 映射链建立', 'm4-3': '模块四：3. 策略协同与冲突',
+                'm5-1': '模块五：1. 综合评价与批判', 'm5-2': '模块五：2. 可行性反思',
+                'm5-3': '模块五：3. 迁移潜能与边界', 'm5-4': '模块五：4. 反事实设计'
+            };
+            const outMap = {
+                'o1-1': '产出：基本信息定位', 'o1-2': '产出：初始条件与核心约束',
+                'o1-3': '产出：核心利益相关者', 'o1-4': '产出：政策与市场语境',
+                'o2-1': '产出：核心概念提炼', 'o2-2': '产出：概念内涵阐释',
+                'o2-3': '产出：概念生成溯源', 'o2-4': '产出：概念统领性检验',
+                'o3-1': '产出：目标层级解构', 'o3-2': '产出：逻辑关联分析',
+                'o3-3': '产出：目标的情境响应', 'o4-1': '产出：关键策略归纳',
+                'o4-2': '产出：映射链建立', 'o4-3': '产出：策略协同与冲突',
+                'o5-1': '产出：综合评价与批判', 'o5-2': '产出：可行性反思',
+                'o5-3': '产出：迁移潜能与边界', 'o5-4': '产出：反事实设计'
+            };
+            
+            if (format === 'html') {
+                let htmlContent = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${caseData.name} - 解构笔记</title>
+                <style>body{font-family:Segoe UI,Microsoft YaHei,sans-serif;max-width:900px;margin:40px auto;line-height:1.8;color:#333;}
+                h1{color:#667eea;}h2{color:#764ba2;border-bottom:2px solid #eee;padding-bottom:8px;margin-top:30px;}
+                .section{margin-bottom:15px;background:#f8f9ff;padding:15px;border-radius:8px;}
+                .dim-section{margin-bottom:25px;border:1px solid #e0e0e0;padding:20px;border-radius:12px;}
+                .dim-title{font-weight:600;color:#667eea;margin-bottom:10px;font-size:1.1em;}
+                .img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;margin-top:15px;}
+                .img-grid img{width:100%;border-radius:8px;border:1px solid #e0e0e0;}
+                .meta{color:#999;font-size:0.9em;margin-bottom:20px;}</style></head><body>
+                <h1>📝 ${caseData.name} - 概念性城市设计案例解构笔记</h1>
+                <div class="meta">导出时间：${timestamp} | 用户：${currentUser ? currentUser.name : '未登录'}</div>`;
+                
+                for (let key in caseData.notes) {
+                    if (caseData.notes[key].trim() || (caseData.dimImages && caseData.dimImages[key] && caseData.dimImages[key].length)) {
+                        htmlContent += `<div class="dim-section"><div class="dim-title">${noteMap[key] || key}</div>`;
+                        if (caseData.notes[key].trim()) {
+                            htmlContent += `<div class="section">${caseData.notes[key].replace(/\n/g,'<br>')}</div>`;
+                        }
+                        if (caseData.dimImages && caseData.dimImages[key] && caseData.dimImages[key].length) {
+                            htmlContent += `<div class="img-grid">`;
+                            caseData.dimImages[key].forEach(img => {
+                                htmlContent += `<img src="${img.src}" title="${img.name}">`;
+                            });
+                            htmlContent += `</div>`;
+                        }
+                        htmlContent += `</div>`;
+                    }
+                }
+                for (let key in caseData.outputs) {
+                    if (caseData.outputs[key].trim()) {
+                        htmlContent += `<h2>${outMap[key] || key}</h2><div class="section">${caseData.outputs[key].replace(/\n/g,'<br>')}</div>`;
+                    }
+                }
+                htmlContent += `</body></html>`;
+                
+                const blob = new Blob([htmlContent], {type: 'text/html;charset=utf-8'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = `${caseData.name}_解构笔记.html`; a.click();
+                URL.revokeObjectURL(url);
+            } else {
+                let content = '';
+                if (format === 'md') {
+                    content = `# ${caseData.name} - 解构笔记\n\n**导出时间：** ${timestamp}\n\n`;
+                    for (let key in caseData.notes) {
+                        if (caseData.notes[key].trim()) content += `## ${noteMap[key]}\n\n${caseData.notes[key]}\n\n`;
+                    }
+                    for (let key in caseData.outputs) {
+                        if (caseData.outputs[key].trim()) content += `## ${outMap[key]}\n\n${caseData.outputs[key]}\n\n`;
+                    }
+                } else {
+                    content = `${caseData.name} - 解构笔记\n导出时间：${timestamp}\n\n`;
+                    for (let key in caseData.notes) {
+                        if (caseData.notes[key].trim()) content += `${noteMap[key]}\n${caseData.notes[key]}\n\n`;
+                    }
+                    for (let key in caseData.outputs) {
+                        if (caseData.outputs[key].trim()) content += `${outMap[key]}\n${caseData.outputs[key]}\n\n`;
+                    }
+                }
+                const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = `${caseData.name}_解构笔记.${format==='md'?'md':'txt'}`;
+                a.click(); URL.revokeObjectURL(url);
+            }
+            closeModal('exportModal');
+        }
+
+        // 策略卡片
+        function showStrategyCardModal() {
+            if (!currentUser) { alert('请先设置用户身份'); showUserModal(); return; }
+            if (currentCaseId) {
+                const caseData = cases.find(c => c.id === currentCaseId);
+                if (caseData) document.getElementById('cardCaseName').value = caseData.name;
+            }
+            document.getElementById('strategyCardModal').classList.add('active');
+        }
+
+        function saveStrategyCard() {
+            const name = document.getElementById('cardCaseName').value.trim();
+            const problem = document.getElementById('cardProblem').value.trim();
+            const concept = document.getElementById('cardConcept').value.trim();
+            const mapping = document.getElementById('cardMapping').value.trim();
+            if (!name || !problem || !concept || !mapping) {
+                alert('请填写必填项'); return;
+            }
+            
+            strategyCards.push({
+                id: 'card_' + Date.now(),
+                caseName: name, problem, concept, mapping,
+                boundary: document.getElementById('cardBoundary').value,
+                reflection: document.getElementById('cardReflection').value,
+                createdAt: new Date().toLocaleString()
+            });
+            saveUserData();
+            
+            document.getElementById('cardProblem').value = '';
+            document.getElementById('cardConcept').value = '';
+            document.getElementById('cardMapping').value = '';
+            document.getElementById('cardBoundary').value = '';
+            document.getElementById('cardReflection').value = '';
+            alert('策略卡片已存入知识库！');
+            closeModal('strategyCardModal');
+        }
+
+        // 知识库
+        function showKnowledgeBase() {
+            if (!currentUser) { alert('请先设置用户身份'); showUserModal(); return; }
+            selectedForCompare.clear();
+            renderKnowledgeBase();
+            document.getElementById('knowledgeBaseModal').classList.add('active');
+        }
+
+        function renderKnowledgeBase() {
+            const grid = document.getElementById('knowledgeGrid');
+            const search = document.getElementById('knowledgeSearch').value.toLowerCase();
+            const filtered = strategyCards.filter(card => 
+                card.caseName.toLowerCase().includes(search) ||
+                card.problem.toLowerCase().includes(search) ||
+                card.concept.toLowerCase().includes(search) ||
+                card.mapping.toLowerCase().includes(search)
+            );
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-state">暂无策略卡片，请先完成解构并生成卡片</div>';
+                document.getElementById('compareBtn').disabled = true;
+                return;
+            }
+            
+            grid.innerHTML = filtered.map(card => `
+                <div class="knowledge-card">
+                    <span class="card-delete" onclick="deleteCard('${card.id}')">×</span>
+                    <label class="card-compare-check" onclick="event.stopPropagation()">
+                        <input type="checkbox" onchange="toggleCompare('${card.id}')" ${selectedForCompare.has(card.id)?'checked':''}>
+                        对比
+                    </label>
+                    <h4>${card.caseName}</h4>
+                    <div class="card-meta">${card.createdAt}</div>
+                    <div class="card-field"><strong>核心问题</strong><p>${card.problem}</p></div>
+                    <div class="card-field"><strong>概念逻辑</strong><p>${card.concept}</p></div>
+                    <div class="card-field"><strong>关键映射</strong><p>${card.mapping}</p></div>
+                    ${card.boundary?`<div class="card-field"><strong>适用边界</strong><p>${card.boundary}</p></div>`:''}
+                    ${card.reflection?`<div class="card-field"><strong>个人反思</strong><p>${card.reflection}</p></div>`:''}
+                </div>
+            `).join('');
+            
+            document.getElementById('compareBtn').disabled = selectedForCompare.size < 2 || selectedForCompare.size > 4;
+            document.getElementById('compareBtn').innerHTML = `<span>📊</span> 对比选中 (${selectedForCompare.size})`;
+        }
+
+        function toggleCompare(cardId) {
+            if (selectedForCompare.has(cardId)) selectedForCompare.delete(cardId);
+            else {
+                if (selectedForCompare.size >= 4) {
+                    alert('最多只能选择4个卡片进行对比'); 
+                    event.target.checked = false; return;
+                }
+                selectedForCompare.add(cardId);
+            }
+            renderKnowledgeBase();
+        }
+
+        function startCompare() {
+            if (selectedForCompare.size < 2 || selectedForCompare.size > 4) return;
+            const selected = strategyCards.filter(c => selectedForCompare.has(c.id));
+            const fields = [
+                {key:'problem', label:'核心问题'},
+                {key:'concept', label:'概念逻辑'},
+                {key:'mapping', label:'关键映射'},
+                {key:'boundary', label:'适用边界'},
+                {key:'reflection', label:'个人反思'}
+            ];
+            
+            let html = '<table class="compare-table"><thead><tr><th style="width:120px;">对比维度</th>';
+            selected.forEach(c => html += `<th>${c.caseName}</th>`);
+            html += '</tr></thead><tbody>';
+            
+            fields.forEach(f => {
+                html += `<tr><td style="font-weight:600;background:#f8f9ff;">${f.label}</td>`;
+                selected.forEach(c => {
+                    html += `<td>${c[f.key] || '-'}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('compareContainer').innerHTML = html;
+            closeModal('knowledgeBaseModal');
+            document.getElementById('compareModal').classList.add('active');
+        }
+
+        function deleteCard(cardId) {
+            if (!confirm('确定要删除这张策略卡片吗？')) return;
+            strategyCards = strategyCards.filter(c => c.id !== cardId);
+            selectedForCompare.delete(cardId);
+            saveUserData();
+            renderKnowledgeBase();
+        }
+
+        // 备份/恢复
+        function showBackupModal() {
+            document.getElementById('backupModal').classList.add('active');
+        }
+
+        function exportUserDatabase() {
+            if (!currentUser) { alert('请先设置用户身份'); return; }
+            const data = {
+                version: '1.0',
+                exportType: 'deconstruct_user_database',
+                user: currentUser,
+                cases: cases,
+                strategyCards: strategyCards,
+                exportedAt: new Date().toLocaleString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `deconstruct_backup_${currentUser.name}_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('数据库已导出！请妥善保存此文件。');
+        }
+
+        function importUserDatabase(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.exportType || data.exportType !== 'deconstruct_user_database') {
+                        alert('无效的数据库文件格式'); return;
+                    }
+                    
+                    if (!confirm(`确认导入用户 "${data.user.name}" 的数据库吗？这将覆盖当前用户的所有数据！`)) return;
+                    
+                    currentUser = data.user;
+                    cases = data.cases || [];
+                    strategyCards = data.strategyCards || [];
+                    
+                    localStorage.setItem('deconstruct_current_user', JSON.stringify(currentUser));
+                    saveUserData();
+                    
+                    document.getElementById('currentUserName').textContent = currentUser.name;
+                    updateCaseSelect();
+                    clearAllInputs();
+                    alert('数据库恢复成功！');
+                    closeModal('backupModal');
+                } catch(err) {
+                    alert('文件解析失败：' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // 通用
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+        });
+
+        document.querySelectorAll('.note-input, .output-input').forEach(input => {
+            input.addEventListener('blur', () => { if (currentCaseId) saveCurrentCaseData(); });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+        });
+    </script>
+</body>
+</html>
